@@ -15,7 +15,7 @@ export default function JobCard({id, title}: Props) {
          {...attributes} {...listeners}
          style={style}
          className="select-none cursor-grab active:cursor-grabbing
-                    bg-zinc-800 text-white rounded-xl p-4 shadow-lg">
+                    bg-zinc-700 text-white rounded-xl p-4 shadow-lg">
       {title}
     </div>
   );
