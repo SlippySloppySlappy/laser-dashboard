@@ -9,13 +9,89 @@ const laneNames: Record<LaneKey, string> = {
   processing: 'Processing',
   done: 'Completed',
 };
+const laneWidth: Record<LaneKey,string> = {
+  ready:     'w-1/4',
+  processing:'w-1/2',
+  done:      'w-1/4',
+};
+
+const laneClass: Record<LaneKey,string> = {
+  ready:      'basis-1/4 grow-0 shrink-0',   // 25 %
+  processing: 'basis-1/2 grow-0 shrink-0',   // 50 %
+  done:       'basis-1/4 grow-0 shrink-0',   // 25 %
+};
+
+type Job = {
+  id: string;
+  priority: 'Low'|'Med'|'High';
+  manager: string;
+  nsheets: number;
+  timeAllowedMin: number;   // or seconds
+  progressPct: number;      // 0–100
+  details: {
+    subnest: string;
+    ncName: string;
+    material: string;
+    thickness: number;
+    sheetNo: number;
+    location: string;
+    doneAt?: string;
+  }[];
+  status: 'ready'|'processing'|'done';
+};
 
 export default function JobBoard() {
-  const [lanes, setLanes] = useState<Record<LaneKey, {id: string; title: string;}[]>>({
-    ready: [{id: 'J-1023', title: 'Job 1023'}, {id: 'J-1024', title: 'Job 1024'}],
-    processing: [{id: 'J-1021', title: 'Job 1021'}],
-    done: [{id: 'J-1017', title: 'Job 1017'}],
+  const [lanes, setLanes] = useState<Record<LaneKey, Job[]>>({
+    ready: [
+      {
+        id: 'J‑1023',
+        priority: 'High',
+        manager: 'Alice',
+        nsheets: 3,
+        timeAllowedMin: 45,
+        progressPct: 0,
+        status: 'ready',
+        details: [
+          { subnest: 'A1', ncName: 'nest_A1.nc', material: 'MildSteel', thickness: 3,
+            sheetNo: 1, location: 'Rack 4‑B', doneAt: undefined },
+        ],
+      },
+      // …add more jobs
+    ],
+    processing: [
+      {
+        id: 'J‑1021',
+        priority: 'Med',
+        manager: 'Bob',
+        nsheets: 2,
+        timeAllowedMin: 30,
+        progressPct: 50,
+        status: 'processing',
+        details: [
+          { subnest: 'B3', ncName: 'nest_B3.nc', material: 'Alu', thickness: 2,
+            sheetNo: 1, location: 'Table A', doneAt: '09:15' },
+          { subnest: 'B4', ncName: 'nest_B4.nc', material: 'Alu', thickness: 2,
+            sheetNo: 2, location: 'Table A', doneAt: undefined },
+        ],
+      },
+    ],
+    done: [
+      {
+        id: 'J‑1017',
+        priority: 'Low',
+        manager: 'Cara',
+        nsheets: 1,
+        timeAllowedMin: 20,
+        progressPct: 100,
+        status: 'done',
+        details: [
+          { subnest: 'C1', ncName: 'nest_C1.nc', material: 'SS', thickness: 1,
+            sheetNo: 1, location: 'Stack‑out', doneAt: '08:30' },
+        ],
+      },
+    ],
   });
+  
 
   function handleDragEnd({active, over}: any) {
     if (!over) return;
@@ -41,9 +117,9 @@ export default function JobBoard() {
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div className="flex gap-4 p-6">
+      <div className="flex w-full gap-4 p-6">
         {(Object.keys(lanes) as LaneKey[]).map(key => (
-          <Lane key={key} id={key} title={laneNames[key]} jobs={lanes[key]} />
+          <Lane key={key} id={key} title={laneNames[key]} jobs={lanes[key]} widthClass={laneClass[key]}/>
         ))}
       </div>
     </DndContext>
