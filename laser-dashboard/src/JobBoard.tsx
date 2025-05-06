@@ -21,6 +21,12 @@ const laneClass: Record<LaneKey,string> = {
   done:       'basis-1/4 grow-0 shrink-0',   // 25 %
 };
 
+const laneSpan: Record<LaneKey, string> = {
+  ready:      'col-span-1',   // 25 %
+  processing: 'col-span-2',   // 50 %
+  done:       'col-span-1',   // 25 %
+};
+
 type Job = {
   id: string;
   priority: 'Low'|'Med'|'High';
@@ -117,9 +123,13 @@ export default function JobBoard() {
 
   return (
     <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-      <div className="flex w-full gap-4 p-6">
+      <div className="grid grid-cols-4 gap-4 p-6 w-full">
         {(Object.keys(lanes) as LaneKey[]).map(key => (
-          <Lane key={key} id={key} title={laneNames[key]} jobs={lanes[key]} widthClass={laneClass[key]}/>
+            <Lane key={key}
+                  title={laneNames[key]}
+                  jobs={lanes[key]}
+                  spanClass={laneSpan[key]}
+            />
         ))}
       </div>
     </DndContext>
